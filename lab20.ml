@@ -31,19 +31,17 @@ class image (bm : bit_map) : image_type =
 
       ignore (Graphics.read_key ()); Graphics.close_graph ()
 
-    method private filter (f : float -> float) : bit_map =
-      List.map (fun row -> List.map f row) img
+    method private filter (f : float -> float) : unit =
+      let new_image = List.map (fun row -> List.map f row) img in
+      self#depict new_image
 
-    method no_filter = self#depict img
+    method no_filter = self#filter (fun x -> x)
 
     method threshold threshold =
-      let new_img = self#filter (fun v -> if v <= threshold then 0. else 1.) in
-        self#depict new_img
+      self#filter (fun v -> if v <= threshold then 0. else 1.)
 
     method dither =
-      let new_img = self#filter
-                    (fun v -> if v > Random.float 1. then 1. else 0.) in
-        self#depict new_img
+      self#filter (fun v -> if v > Random.float 1. then 1. else 0.)
 
   end ;;
 
